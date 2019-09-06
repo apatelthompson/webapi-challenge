@@ -1,0 +1,15 @@
+* Mention two parts of Express that you learned about this week.
+	* Routing and Middleware
+
+* Describe Middleware?
+	* an array of functions that get executed in the order they’re listed in the server code
+	* different kinds of middleware are: built-in (like server.use(express.json()), third-party (like cors or helmet) and custom
+
+* Describe a Resource?
+	* It’s whatever is accessed by the URL. It is usually an object with a type, associated data, relationships to other resources and a set of methods that operate on it.
+
+* What can the API return to help clients know if a request was successful?
+	* Status Codes
+
+* How can we partition our application into sub-applications?
+	* Using Express Routers
