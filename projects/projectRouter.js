@@ -1,5 +1,6 @@
 const express = require("express");
 const projectDb = require("../data/helpers/projectModel.js");
+const actionDb = require("../data/helpers/actionModel.js");
 
 const router = express.Router();
 
@@ -143,6 +144,129 @@ router.put("/:id", (req, res) => {
       res
         .status(500)
         .json({ error: "The project information could not be modified." });
+    });
+});
+
+/// action api
+
+router.post("/:project_id/actions", (req, res) => {
+  console.log(req.body);
+  const { project_id } = req.params;
+  const { description, notes } = req.body;
+  if (!description || !notes) {
+    res.status(400).json({
+      errorMessage: "Please provide a description and notes for the action."
+    });
+  }
+  actionDb
+    .insert({ description, notes, project_id })
+    .then(({ id }) => {
+      actionDb
+        .get(id)
+        .then(action => {
+          res.status(201).json(action);
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).json({
+            error: "There was an error while saving the action to the database"
+          });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: "There was an error while saving the action to the database"
+      });
+    });
+});
+
+router.get("/:project_id/actions/", (req, res) => {
+  actionDb
+    .get()
+    .then(action => res.status(200).json(action))
+    .catch(err => {
+      console.log(err);
+      res
+        .status(500)
+        .json({ error: "The action information could not be retrieved." });
+    });
+});
+
+router.get("/:project_id/actions/:id", (req, res) => {
+  const { id } = req.params;
+  actionDb
+    .get(id)
+    .then(action => {
+      console.log("action", action);
+      if (action) {
+        res.status(200).json(action);
+      } else {
+        res.status(404).json({
+          message: "The action with the specified ID does not exist."
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res
+        .status(500)
+        .json({ error: "The action information could not be retrieved." });
+    });
+});
+
+router.delete("/:project_id/actions/:id", (req, res) => {
+  const { id } = req.params;
+  actionDb
+    .remove(id)
+    .then(deleted => {
+      console.log(deleted);
+      if (deleted) {
+        res.status(200).end();
+      } else {
+        res.status(404).json({
+          message: "The action with the specified ID does not exist."
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "The action could not be removed" });
+    });
+});
+
+router.put("/:project_id/actions/:id", (req, res) => {
+  const { id, project_id } = req.params;
+  const { description, notes } = req.body;
+  if (!description && !notes) {
+    res.status(400).json({
+      errorMessage: "Please provide description and notes for the action."
+    });
+  }
+  actionDb
+    .update(project_id, { description, notes })
+    .then(updated => {
+      if (updated) {
+        actionDb
+          .get(id)
+          .then(action => res.status(200).json(action))
+          .catch(err => {
+            console.log(err);
+            res
+              .status(500)
+              .json({ error: "The action information could not be modified." });
+          });
+      } else {
+        res.status(404).json({
+          message: "The action with the specified ID does not exist."
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res
+        .status(500)
+        .json({ error: "The action information could not be modified." });
     });
 });
 
