@@ -1,14 +1,14 @@
 const express = require("express");
 
-// const userRouter = require("./users/userRouter");
-// const postRouter = require("./posts/postRouter");
+const projectRouter = require("./projects/projectRouter.js");
+const actionRouter = require("./actions/actionRouter");
 
 const server = express();
 
 server.use(express.json());
 
-// server.use("/posts", postRouter);
-// server.use("/users", userRouter);
+server.use("/projects", projectRouter);
+server.use("/actions", actionRouter);
 
 server.get("/", (req, res) => {
   res.status(200).send(`<h2>It's working!!</h2>`);
